@@ -1,0 +1,2 @@
+# rrdwizard
+RRDtool Wizard
