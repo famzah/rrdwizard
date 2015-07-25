@@ -1,6 +1,6 @@
 <?
 error_reporting(E_ALL);
-ini_set('display_errors', '1');
+ini_set('display_errors', '0');
 
 function is_valid_vname($s) {
 	return preg_match('/^[a-zA-Z0-9_]{1,19}$/', $s);
