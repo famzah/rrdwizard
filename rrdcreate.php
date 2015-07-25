@@ -114,7 +114,7 @@ function setValue(id, value) {
 <tr>
 	<td>Time interval in <em>seconds</em> with which data will be fed by an update script (<b>step</b>):</td>
 	<td>
-		<select id="step_sel_<?=$i?>" onchange="setValue('step', this.value)">
+		<select id="step_sel" onchange="setValue('step', this.value)">
 			<? foreach (array(0, 30, 60, 120, 300, 600, 900, 1800, 3600, 7200, 10800, 21600, 43200, 86400) as $t) { ?>
 			<option value="<?=$t?>"<?=($t == gpost('step', 'n') ? ' selected' : '')?>><?=h(hr_sec($t))?></option>
 			<? } ?>
