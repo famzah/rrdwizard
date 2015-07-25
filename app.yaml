@@ -1,0 +1,18 @@
+application: rrdwizard
+version: 1
+runtime: php55
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /(index\.php)?
+  script: index.php
+
+- url: /(import|rrdcreate|rrdgraph|resources)\.php
+  script: \1.php
+
+- url: /colorpicker
+  static_dir: colorpicker
+
+- url: /sinorca
+  static_dir: sinorca
