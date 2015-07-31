@@ -5,7 +5,7 @@ require('header.php');
 
 function h_color_picker($name, $i, $value) {
 ?>
-			<a href="javascript:onclick=showColorGrid2('<?=$name?>_color_<?=$i?>','<?=$name?>_sample_<?=$i?>');">Select Color</a>:&nbsp;
+			<a href="javascript:onclick=show_color_picker('<?=$name?>_picker', '<?=$name?>_color_<?=$i?>','<?=$name?>_sample_<?=$i?>');">Select Color</a>:&nbsp;
 			<input
 				type="text" size="9"
 				name="<?=$name?>_color_<?=$i?>"
@@ -150,11 +150,37 @@ $stage = isset($_POST['cdefdone']) && $stage < 3 ? 3 : $stage;
 $stage = isset($_POST['vdefdone']) && $stage < 4 ? 4 : $stage;
 $stage = isset($_POST['linesdone']) && $stage < 5 ? 5 : $stage;
 $stage = isset($_POST['labelsdone']) && $stage < 6 ? 6 : $stage;
+
+$stage_next_action = array(
+	'Enter a RRD filename',
+	'Define at least one DEF entry',
+	'Optionally, define one or more CDEF entries',
+	'Optionally, define one or more VDEF entries',
+	'Define at least one LINE/AREA entry',
+	'Optionally, define one or more LABEL entries',
+);
 ?>
 <script language='JavaScript'>
 function setValue(id, value) {
 	document.getElementById(id).value = value;
 	return false;
+}
+function show_color_picker(divname, val1, val2) {
+	// reset
+	['line_picker', 'vdef_picker'].map(function(item) {
+		var el = document.getElementsByName(item);
+		el = el[0];
+		el.id = '';
+		el.className = '';
+	});
+
+	// set
+	var el = document.getElementsByName(divname);
+	el = el[0];
+	el.id = 'colorpicker201';
+	el.className = 'colorpicker201';
+
+	showColorGrid2(val1, val2);
 }
 </script>
 
@@ -163,7 +189,7 @@ function setValue(id, value) {
 
 <? if ($err) { ?>
 
-<h1 id="error">Error</h1>
+<h1 id="error" style="background-color: red">Error</h1>
 <p>Please create the RRD first using the <a href="rrdcreate.php">Create a RRD</a> wizard.</p>
 <p>Alternatively you can import the structure of an existing RRD using the <a href="import.php">Import a RRD</a> wizard.</p>
 
@@ -235,7 +261,7 @@ $rra_cfs = array_unique($rra_cfs);
 </tr>
 <?
 $opts = array(
-	'rrdfilename' => array('RRD filename', '', '', array(), 1),
+	'rrdfilename' => array('RRD filename', '', 'db.rrd', array(), 1),
 	'graphfilename' => array('Graph filename', '', 'graph.png', array(), 1),
 	'htitle' => array('Horizontal top title', '', '', array(), 0),
 	'vtitle' => array('Vertical left title', '', '', array(), 0),
@@ -258,7 +284,7 @@ foreach ($opts as $name => $data) {
 ?>
 <tr>
 	<td><?=h($data[0])?></td>
-	<td><?=($data[4] ? 'Yes' : 'No')?></td>
+	<td><?=($data[4] ? '<b>Yes</b>' : 'No')?></td>
 	<td>
 		<?
 			if (count($values) == 0) {
@@ -403,6 +429,7 @@ foreach ($opts as $name => $data) {
 <dl>
 <dt>Single aggregated data/time value for the whole <b>visualized</b> dataset</dt>
 <dd>
+<div name="vdef_picker"></div>
 <table border="1">
 <tr>
 	<td class="tdheader">Virtual name</td>
@@ -459,7 +486,6 @@ for ($i = 0; $i < $max_num_vdefs; ++$i) {
 
 </table>
 <input type="hidden" name="vdef_cnt" value="<?=$i?>">
-<div id="colorpicker201" class="colorpicker201"></div>
 </dd>
 <dt><input type="submit" value="Update"> <input type="submit" value="Done defining VDEFs" name="vdefdone"></dt>
 </dl>
@@ -470,6 +496,7 @@ for ($i = 0; $i < $max_num_vdefs; ++$i) {
 <dl>
 <dt>These are the LINES and AREAS that you typically see in your graph area</dt>
 <dd>
+	<div name="line_picker"></div>
 	<table border="1">
 	<tr>
 		<td class="tdheader">Width</td>
@@ -626,16 +653,22 @@ for ($i = 0; $i < $max_num_vdefs; ++$i) {
 <? } ?>
 
 <? if ($stage >= 6) { ?>
-<a name="cmd"><h1 id="archives">RRD graph command</h1></a>
-<p><pre>
 <?
 	$err = check_vnames(array_merge($vnames, $vdef_vnames), 0);
 	if ($err == '') {
-		if ($entered_lines == 0) $err = 'ERROR: You defined no LINES/AREAS at "Data series visualization".';
+		if ($entered_lines == 0) $err = '# ERROR: You defined no LINES/AREAS at "Data series visualization".';
 	}
+
 	if ($err != '') {
-		echo h($err);
+?>
+	<h1 id="error" style="background-color: red">Error</h1>
+	<p><?=h($err)?></p>
+<?
 	} else {
+?>
+		<a name="cmd"><h1 id="archives" style="background-color: green">RRD graph command</h1></a>
+		<p><pre>
+<?
 		echo "# The command is escaped for Linux bash\n\n";
 		#print_r($_POST);
 		#echo "STAGE: $stage";
@@ -643,7 +676,10 @@ for ($i = 0; $i < $max_num_vdefs; ++$i) {
 	}
 ?>
 </pre></p>
-<? } ?>
+<? } else { ?>
+	<h1 style="background-color: magenta">Next action</h1>
+	<p><?=h($stage_next_action[$stage])?>.</p>
+<? } // stage < 6 ?>
 
 <a name="bottom"></a>
 <input type="hidden" name="stage" value="<?=$stage?>">

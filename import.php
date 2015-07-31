@@ -98,12 +98,12 @@ $err = parse_input();
 ?>
 
 <? if ($err != '') { ?>
-<h1 id="error">ERROR</h1>
+<h1 id="error" style="background-color: red">ERROR</h1>
 <p><?=h($err)?></p>
 <? } ?>
 
 <? if ($got_data) { ?>
-<h1 id="error">Parsing successful</h1>
+<h1 id="ok" style="background-color: green">Parsing successful</h1>
 <dl>
 	<dt>
 	<form method="post" action="rrdgraph.php">

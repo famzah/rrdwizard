@@ -109,6 +109,15 @@ function setValue(id, value) {
 <!--<form method="POST" id="form1" action='?nocache=<?=time()?>#bottom'>-->
 <form method="POST" id="form1" action='?'>
 
+<?
+if (gpost('step', 'n') > 0) {
+?>
+<h1 id='error' style="background-color: magenta">Next step</h1>
+<p>Please scroll down and fill in the forms. The end result is at the bottom of the page.</p>
+<?
+}
+?>
+
 <h1 id="step-and-general">Step</h1>
 <table border="0">
 <tr>
@@ -146,6 +155,15 @@ function setValue(id, value) {
 <tr><td>Archives count:</td><td>&nbsp;</td><td><input type="text" name="rra_rows" value="<?=h(gpost('rra_rows', 'n', 10))?>" size="5"></td></tr>
 <tr><td colspan="3"><input type="submit" value="Submit"></td>
 </table>
+
+<?
+if (gpost('step', 'n') <= 0) {
+?>
+<h1 id='error' style="background-color: magenta">Next step</h1>
+<p>Please select a "step".</p>
+<?
+}
+?>
 
 <div style="display:<?=(gpost('step', 'n') > 0 ? 'block' : 'none')?>">
 <a name="ds"><h1 id="data-sources">Data Sources (DS)</h1></a>
@@ -272,11 +290,18 @@ function setValue(id, value) {
 <dt><input type="submit" value="Submit"></dt>
 </dl>
 
-<a name="cmd"><h1 id="archives">RRD create command</h1></a>
+<?
+$rrdcmd = rrdcreate_cmd();
+$rrdcmd_error = preg_match('/# ERROR:/', $rrdcmd);
+?>
+
+<a name="cmd"><h1 id="archives" style="background-color: <?=($rrdcmd_error ? 'red' : 'green')?>">RRD create command</h1></a>
 <p><pre><?=h(rrdcreate_cmd())?></pre></p>
 
-<a name="graph"><h1 id="graph_wizard">RRD graph wizard</h1></a>
+<? if (!$rrdcmd_error) { ?>
+<a name="graph"><h1 id="graph_wizard" style="background-color: green">RRD graph wizard</h1></a>
 <p><input value="Start graph wizard" type="button" onclick="f=document.getElementById('form1');f.action='rrdgraph.php';f.submit()"></p>
+<? } ?>
 
 <!--<a name="bottom"></a>-->
 
