@@ -6,6 +6,12 @@ function alink($url, $desc) {
 	return sprintf('<a href="%s" target="_blank">%s</a>', h($url), h($desc));
 }
 ?>
+<h1 id="links">Support inquiries</h1>
+<dl>
+	<dt>support</dt>
+			<dd><?=alink('http://rrdwizard.appspot.com/resources.php', 'RRDtool Support page')?></dd>
+</dl>
+
 <h1 id="links">The following resources helped me to understand RRDtool better</h1>
 <dl>
 	<dt>rrdtutorial</dt>
