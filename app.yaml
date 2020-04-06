@@ -14,3 +14,6 @@ handlers:
 
 - url: /sinorca
   static_dir: sinorca
+
+- url: /(robots.txt)
+  static_files: \1
